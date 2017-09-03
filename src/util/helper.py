@@ -67,3 +67,18 @@ def shuffle_data(x, y):
 	order = np.arange(0, x.shape[1]).reshape((1, -1))
 	x, y, order =  shuffle(x.T, y.T, order.T, random_state=0)
 	return x.T, y.T, order.T
+
+def divide_dataset(size, x, y):
+	# @param size	the percent of dataset into dev set
+
+	m = x.shape[1]
+	dev_size = np.floor(m * size / 100).astype(int)
+	x_train = x[:, 0:(m - 2 * dev_size)]
+	y_train = y[:, 0:(m - 2 * dev_size)]
+
+	x_dev = x[:, (m - 2 * dev_size):(m - dev_size)]
+	y_dev = y[:, (m - 2 * dev_size):(m - dev_size)]
+
+	x_test = x[:, (m - dev_size):]
+	y_test = y[:, (m - dev_size):]
+	return x_train, y_train, x_dev, y_dev, x_test, y_test
