@@ -1,5 +1,6 @@
 import csv
 import numpy as np
+from sklearn.utils import shuffle
 
 def load_csvfile(filename):
 	data_dict = {}
@@ -61,3 +62,8 @@ def handle_data(train_file, test_file):
 
 def load_dataset(train_file, test_file):
 	return	handle_data(train_file, test_file)
+
+def shuffle_data(x, y):
+	order = np.arange(0, x.shape[1]).reshape((1, -1))
+	x, y, order =  shuffle(x.T, y.T, order.T, random_state=0)
+	return x.T, y.T, order.T
