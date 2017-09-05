@@ -22,13 +22,20 @@ def handle_data(train_file, test_file):
 
 	train_set_y = train_dict["Survived"]
 	train_age = train_dict["Age"]
+	count = np.sum(train_age == '')
 	train_age[train_age == ''] = 0
+	train_age = train_age.astype(np.float64)
+	mean_age = np.sum(train_age) / (train_age.shape[1] - count)
+	train_age[train_age == 0] = mean_age
 	train_dict["Age"] = train_age
 	
 	test_age = test_dict["Age"]
+	count = np.sum(test_age == '')
 	test_age[test_age == ''] = 0
+	test_age = test_age.astype(np.float64)
+	mean_age = np.sum(test_age) / (test_age.shape[1] - count)
+	test_age[test_age == 0] = mean_age
 	test_dict["Age"] = test_age
-	
 
 	train_dict["Sex"] = (train_dict["Sex"] == "male").astype(int)
 	test_dict["Sex"] = (test_dict["Sex"] == "male").astype(int)
@@ -48,8 +55,10 @@ def handle_data(train_file, test_file):
 			test_embarked[0][i] = 1
 		elif test_embarked[0][i] == "C":
 			test_embarked[0][i] = 2
-		else:
+		elif test_embarked[0][i] == "Q":
 			test_embarked[0][i] = 3
+		else:
+			test_embarked[0][i] = 4
 	
 	train_dict["Embarked"] = train_embarked
 	test_dict["Embarked"] = test_embarked

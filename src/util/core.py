@@ -25,6 +25,11 @@ def initialize_parameters(n_x, n_y):
 def sigmoid(z):
 	return 1 / (1 + np.exp(-z))
 
+def relu(z):
+	if z > 0:
+		return z
+	return 0
+
 def compute_cost(Y_pred, Y):
 	m = Y.shape[1]
 	return (-1 / m) * np.sum(np.multiply(Y, np.log(Y_pred)) + np.multiply((1 - Y), np.log(1 - Y_pred)), axis=1)
@@ -90,3 +95,33 @@ def model(X_train, Y_train, X_dev, Y_dev, X_test, Y_test, num_epochs=2000, learn
 	print("train accuracy: {} %".format(100 - np.mean(np.abs(Y_train_pred - Y_train)) * 100))
 	print("dev accuracy: {} %".format(100 - np.mean(np.abs(Y_dev_pred - Y_dev)) * 100))
 	print("test accuracy: {} %".format(100 - np.mean(np.abs(Y_test_pred - Y_test)) * 100))
+
+
+def initialize_parameters_deep(layer_dims):
+	parameters = {} 
+	L = len(layer_dims)
+	for l in range(1, L):
+		parameters["W" + str(l)] = np.random.randn(layer_dims[l], layer_dims[l - 1]) * 0.01
+		parameters["b" + str(l)] = np.zeros((layer_dims[l], 1))
+
+def linear_forward(A, W, b):
+	assert(W.shape[1] == A.shape[0])
+	assert(W.shape[0] == b.shape[0])
+
+	Z = np.dot(W, A) + b
+	cache = (A, W, b)
+
+	return Z, cache
+
+def linear_activation_forward(A_prev, W, b, activation):
+	Z, cache = linear_forward(A_prev, W, b)
+
+	if activation == "sigmoid":
+		A = sigmoid(Z)
+	elif activation == "relu":
+		A = relu(Z)
+
+	assert(A.shape == (W.shape[0], A_prev.shape[1]))
+
+	return A, cache
+
