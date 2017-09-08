@@ -25,9 +25,27 @@ def initialize_parameters(n_x, n_y):
 def sigmoid(z):
 	return 1 / (1 + np.exp(-z))
 
-def relu(z):
+def sigmoid_forward(z):
+	cache = {
+		"Z" : z
+	} 
+	return 1 / (1 + np.exp(-z)), cache
+
+def relu_forward(z):
+	cache = {
+		"Z" : z
+	}
 	if z > 0:
-		return z
+		return z, cache
+	return 0, cache
+
+def sigmoid_backward(z):
+	s = sigmoid(z)
+	return s * (1 - s)
+
+def relu_backward(z):
+	if z > 0:
+		return 1
 	return 0
 
 def compute_cost(Y_pred, Y):
@@ -104,6 +122,8 @@ def initialize_parameters_deep(layer_dims):
 		parameters["W" + str(l)] = np.random.randn(layer_dims[l], layer_dims[l - 1]) * 0.01
 		parameters["b" + str(l)] = np.zeros((layer_dims[l], 1))
 
+	return parameters
+
 def linear_forward(A, W, b):
 	assert(W.shape[1] == A.shape[0])
 	assert(W.shape[0] == b.shape[0])
@@ -114,14 +134,35 @@ def linear_forward(A, W, b):
 	return Z, cache
 
 def linear_activation_forward(A_prev, W, b, activation):
-	Z, cache = linear_forward(A_prev, W, b)
+	Z, linear_cache = linear_forward(A_prev, W, b)
 
 	if activation == "sigmoid":
-		A = sigmoid(Z)
+		A, activation_cache = sigmoid_forward(Z)
 	elif activation == "relu":
-		A = relu(Z)
+		A, activation_cache = relu_forward(Z)
 
 	assert(A.shape == (W.shape[0], A_prev.shape[1]))
-
+	cache = linear_cache, activation_cache
+	
 	return A, cache
 
+def L_model_forward(X, parameters):
+
+	A = X
+	caches = {}
+	#- Number of layers in neural network
+	L = len(parameters) // 2
+
+	for l in range(1, L):
+		A_prev = A
+		A, cache = linear_activation_forward(A_prev, parameters["W" + str(l)], parameters["b" + str(l)], activation = "relu")
+		caches.append(cache)
+	AL, cache = linear_activation_forward(A_prev, parameters["W" + str(L)], parameters["b" + str(L)], activation = "sigmoid")
+	
+	caches.append(cache)
+	assert(AL.shape == (1, X.shape[1]))
+
+	return AL, caches
+
+def linear_activation_backward(dA, cache, activation):
+	pass
