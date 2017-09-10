@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 def initialize_parameters(n_x, n_y):
 	"""
@@ -118,12 +119,12 @@ def model(X_train, Y_train, X_dev, Y_dev, X_test, Y_test, num_epochs=2000, learn
 	print("test accuracy: {} %".format(100 - np.mean(np.abs(Y_test_pred - Y_test)) * 100))
 
 
-def initialize_parameters_deep(layer_dims):
+def initialize_parameters_deep(layers_dims):
 	parameters = {} 
-	L = len(layer_dims)
+	L = len(layers_dims)
 	for l in range(1, L):
-		parameters["W" + str(l)] = np.random.randn(layer_dims[l], layer_dims[l - 1]) * 0.01
-		parameters["b" + str(l)] = np.zeros((layer_dims[l], 1))
+		parameters["W" + str(l)] = np.random.randn(layers_dims[l], layers_dims[l - 1]) * 0.01
+		parameters["b" + str(l)] = np.zeros((layers_dims[l], 1))
 
 	return parameters
 
@@ -223,5 +224,38 @@ def update_parameters(parameters, grads, learning_rate):
 	for l in range(0, L):
 		parameters["W" + str(l + 1)] = parameters["W" + str(l + 1)] - learning_rate * grads["dW" + str(l + 1)]
 		parameters["b" + str(l + 1)] = parameters["b" + str(l + 1)] - learning_rate * grads["db" + str(l + 1)]
+
+	return parameters
+
+
+def L_layers_model(X, Y, layers_dims, num_epochs=2000, learning_rate = 0.5, print_cost = False):
+	costs = {}
+	#- Initialization of parameters
+	parameters = initialize_parameters_deep(layers_dims)
+
+	#- Traning process
+	for i in num_epochs:
+		#-- Forward propagation
+		AL, caches = L_model_forward(X, parameters)
+		
+		#-- Computing cost to keep trace
+		cost = compute_cost(AL, Y)
+
+		#-- Backward propagation
+		grads = L_model_backward(AL, Y, caches)
+
+		#-- Updating parameters after an iteration
+		parameters = update_parameters(parameters, grads, learning_rate)
+
+		#-- Printing cost to keep trace
+		if print_cost and i % 100 == 0:
+			print("Cost after iteration %i: %f" %(i, cost))
+			costs.append(cost)
+
+	plt.plot(np.squeeze(costs))
+	plt.ylabel("cost")
+	plt.xlabel("iterations (per hundreds)")
+	plt.title("Learning rate = " + str(learning_rate))
+	plt.show()
 
 	return parameters
