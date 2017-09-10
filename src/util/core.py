@@ -39,13 +39,16 @@ def relu_forward(z):
 		return z, cache
 	return 0, cache
 
-def sigmoid_backward(z):
-	s = sigmoid(z)
-	return s * (1 - s)
+def sigmoid_backward(dA, cache):
+	Z = cache["Z"]
+	dAdZ = Z * (1 - Z)
+	dZ = np.multiply(dZ, dAdZ)	
+	return dZ
 
-def relu_backward(z):
-	if z > 0:
-		return 1
+def relu_backward(dA, cache):
+	Z = cache["Z"]
+	if Z > 0:
+		return dA
 	return 0
 
 def compute_cost(Y_pred, Y):
