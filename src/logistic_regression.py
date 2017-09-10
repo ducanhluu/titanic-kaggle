@@ -15,12 +15,9 @@ X_train, Y_train, X_dev, Y_dev, X_test, Y_test = divide_dataset(20, train_set_x_
 #- Logistic regression
 params = model(X_train, Y_train, X_dev, Y_dev, X_test, Y_test, num_epochs=20000, learning_rate = 0.05, print_cost = True)
 
-W = params["W"]
-b = params["b"]
-
-Y_train_pred = predict(W, b, X_train)
-Y_dev_pred = predict(W, b, X_dev)
-Y_test_pred = predict(W, b, X_test)
+Y_train_pred = logistic_regression_predict(X_train, params)
+Y_dev_pred = logistic_regression_predict(X_dev, params)
+Y_test_pred = logistic_regression_predict(X_test, params)
 
 print("train accuracy: {} %".format(100 - np.mean(np.abs(Y_train_pred - Y_train)) * 100))
 print("dev accuracy: {} %".format(100 - np.mean(np.abs(Y_dev_pred - Y_dev)) * 100))

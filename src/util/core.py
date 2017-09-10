@@ -95,7 +95,9 @@ def optimize(W, b, X, Y, num_epochs, learning_rate, print_cost = False):
 
 	return params, costs
 
-def predict(W, b, X):
+def logistic_regression_predict(X, parameters):
+	W = parameters["W"]
+	b = parameters["b"]
 	Y_pred = sigmoid(np.dot(W, X) + b) > 0.5
 	return Y_pred
 
