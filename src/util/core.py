@@ -193,3 +193,26 @@ def linear_activation_backward(dA, cache, activation):
 	dA_prev, dW, db = linear_backward(dZ, linear_cache)
 
 	return dA_prev, dW, db
+
+def L_model_backward(AL, Y, caches):
+	grad = {}
+	#- Number of layers in the models
+	L = len(caches)	
+	m = AL.shape[1]
+	Y = np.reshape(AL.shape)
+
+	#- dJ/dAL
+	dAL = -(np.divide(Y, AL) - np.divide(1 - Y, 1 - AL))
+
+	#- Backward prop for layer L
+	current_cache = caches[L - 1]
+	grad["dA" + str(L)], grad["dW" + str(L)], grad["db" + str(L)] = linear_activation_backward(dAL, current_cache, activation = "sigmoid")
+
+	for l in  reversed(range(0, L - 1)):
+		current_cache = caches[l]
+		dA_prev, dW, db = linear_activation_backward(grad["dA" + str(l + 2)], current_cache, activation = "relu")
+		grad["dA" + str(l + 1)] = dA_prev
+		grad["dW" + str(l + 1)] = dW
+		grad["db" + str(l + 1)] = db
+	
+	return grads
