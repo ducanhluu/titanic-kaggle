@@ -13,11 +13,20 @@ train_set_x_orig, train_set_y, order = shuffle_data(train_set_x_orig, train_set_
 X_train, Y_train, X_dev, Y_dev, X_test, Y_test = divide_dataset(20, train_set_x_orig, train_set_y)
 
 #- Logistic regression
-params = model(X_train, Y_train, X_dev, Y_dev, X_test, Y_test, num_epochs=20000, learning_rate = 0.05, print_cost = True)
+# parameters = model(X_train, Y_train, X_dev, Y_dev, X_test, Y_test, num_epochs=20000, learning_rate = 0.05, print_cost = True)
 
-Y_train_pred = logistic_regression_predict(X_train, params)
-Y_dev_pred = logistic_regression_predict(X_dev, params)
-Y_test_pred = logistic_regression_predict(X_test, params)
+# Y_train_pred = logistic_regression_predict(X_train, parameters)
+# Y_dev_pred = logistic_regression_predict(X_dev, parameters)
+# Y_test_pred = logistic_regression_predict(X_test, parameters)
+
+#- Deep neural networks
+layers_dims = [X_train.shape[0], Y_train.shape[0]]
+
+parameters = L_layers_model(X_train, Y_train, layers_dims, num_epochs=2000, learning_rate = 0.5, print_cost = True)
+
+Y_train_pred = logistic_regression_predict(X_train, parameters)
+Y_dev_pred = logistic_regression_predict(X_dev, parameters)
+Y_test_pred = logistic_regression_predict(X_test, parameters)
 
 print("train accuracy: {} %".format(100 - np.mean(np.abs(Y_train_pred - Y_train)) * 100))
 print("dev accuracy: {} %".format(100 - np.mean(np.abs(Y_dev_pred - Y_dev)) * 100))
