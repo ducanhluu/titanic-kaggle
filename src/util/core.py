@@ -96,7 +96,6 @@ def optimize(W, b, X, Y, num_epochs, learning_rate, print_cost = False):
 	return params, costs
 
 def predict(W, b, X):
-	m = X.shape[1]
 	Y_pred = sigmoid(np.dot(W, X) + b) > 0.5
 	return Y_pred
 
@@ -107,16 +106,13 @@ def model(X_train, Y_train, X_dev, Y_dev, X_test, Y_test, num_epochs=2000, learn
 
 	params, costs = optimize(W, b, X_train, Y_train, num_epochs, learning_rate, print_cost)
 
-	W = params["W"]
-	b = params["b"]
+	plt.plot(np.squeeze(costs))
+	plt.ylabel("cost")
+	plt.xlabel("iterations (per hundreds)")
+	plt.title("Logistics regression with learning rate = " + str(learning_rate))
+	plt.show()
 
-	Y_train_pred = predict(W, b, X_train)
-	Y_dev_pred = predict(W, b, X_dev)
-	Y_test_pred = predict(W, b, X_test)
-
-	print("train accuracy: {} %".format(100 - np.mean(np.abs(Y_train_pred - Y_train)) * 100))
-	print("dev accuracy: {} %".format(100 - np.mean(np.abs(Y_dev_pred - Y_dev)) * 100))
-	print("test accuracy: {} %".format(100 - np.mean(np.abs(Y_test_pred - Y_test)) * 100))
+	return params
 
 
 def initialize_parameters_deep(layers_dims):
@@ -255,7 +251,12 @@ def L_layers_model(X, Y, layers_dims, num_epochs=2000, learning_rate = 0.5, prin
 	plt.plot(np.squeeze(costs))
 	plt.ylabel("cost")
 	plt.xlabel("iterations (per hundreds)")
-	plt.title("Learning rate = " + str(learning_rate))
+	plt.title("Deep learning with learning rate = " + str(learning_rate))
 	plt.show()
 
 	return parameters
+
+def L_layers_predict(X, parameters):
+	AL, _ = L_model_forward(X, parameters)
+	Y_pred = AL > 0.5
+	return Y_pred
