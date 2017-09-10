@@ -127,12 +127,12 @@ def initialize_parameters_deep(layer_dims):
 
 	return parameters
 
-def linear_forward(A, W, b):
-	assert(W.shape[1] == A.shape[0])
+def linear_forward(A_prev, W, b):
+	assert(W.shape[1] == A_prev.shape[0])
 	assert(W.shape[0] == b.shape[0])
 
-	Z = np.dot(W, A) + b
-	cache = (A, W, b)
+	Z = np.dot(W, A_prev) + b
+	cache = (A_prev, W, b)
 
 	return Z, cache
 
@@ -167,5 +167,29 @@ def L_model_forward(X, parameters):
 
 	return AL, caches
 
+def linear_backward(dZ, cache):
+	A_prev, W, b = cache
+
+	m = A_prev.shape[1]
+	
+	dW = (1 / m) * np.dot(dZ, A_prev.T)
+	db = (1 / m) * np.sum(dZ, axis=1)
+	dA_prev = np.dot(W.T, dZ)
+
+	assert(dA_prev.shape == A_prev.shape)
+	assert(dW.shape == W.shape)
+	assert(db.shape ==b.shape)
+
+	return dA_prev, dW, db
+
 def linear_activation_backward(dA, cache, activation):
-	pass
+	linear_cache, activation_cache = cache
+	
+	if activation == "sigmoid":
+		dZ = sigmoid_backward(dA, activation_cache)
+	elif activation == "relu":
+		dZ = relu_backward(dA, activation_cache)
+	
+	dA_prev, dW, db = linear_backward(dZ, linear_cache)
+
+	return dA_prev, dW, db
