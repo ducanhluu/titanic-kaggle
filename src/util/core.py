@@ -36,14 +36,14 @@ def sigmoid_forward(z):
 	
 	return g, cache
 
-def relu_forward(z):
+def relu_forward(Z):
 	cache = {
-		"Z" : z
+		"Z" : Z
 	}
-
-	if z > 0:
-		return z, cache
-	return 0, cache
+	G = Z
+	G[Z <= 0] = 0
+	
+	return G, cache
 
 def sigmoid_backward(dA, cache):
 	G = cache["G"]
@@ -54,9 +54,10 @@ def sigmoid_backward(dA, cache):
 
 def relu_backward(dA, cache):
 	Z = cache["Z"]
-	if Z > 0:
-		return dA
-	return 0
+	dZ = dA
+	dZ[Z <= 0] = 0
+
+	return dZ
 
 def compute_cost(Y_pred, Y):
 	m = Y.shape[1]
