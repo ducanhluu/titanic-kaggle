@@ -59,4 +59,17 @@ mosaicplot(table(full$FsizeD, full$Survived), main = "Family Size by Survival", 
 full$Deck <- sapply(full$Cabin, function(x) strsplit(x, NULL)[[1]][1])
 
 embark_fare <- full %>% filter(PassengerId != 62 & PassengerId != 830)
-print(embark_fare)
+#- Print embarked fare
+# ggplot(embark_fare, aes(x = Embarked, y = Fare, fill = factor(Pclass))) +
+#   geom_boxplot() +
+#   geom_hline(aes(yintercept=80), 
+#              colour='red', linetype='dashed', lwd=2) +
+#   scale_y_continuous(labels=dollar_format()) +
+#   theme_few()
+
+#- Fill missing value in Embarked
+full$Embarked[c(62, 830)] <- "C"
+full[1044, ]
+ggplot(full[full$Embarked == "S" & full$Pclass == 3, ], aes(x = Fare)) +
+  geom_density(fill = '#99d6ff', alpha=0.4) +
+  
