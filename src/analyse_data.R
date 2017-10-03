@@ -5,7 +5,7 @@ library('ggthemes')
 library('dplyr')
 library('mice') # imputation
 library('scales')
-
+library("VIM")
 #- Load data
 train_data <- read.csv("./data/train.csv")
 test_data  <- read.csv("./data/test.csv")
@@ -69,7 +69,25 @@ embark_fare <- full %>% filter(PassengerId != 62 & PassengerId != 830)
 
 #- Fill missing value in Embarked
 full$Embarked[c(62, 830)] <- "C"
-full[1044, ]
+
+#- Draw fare distribution
 ggplot(full[full$Embarked == "S" & full$Pclass == 3, ], aes(x = Fare)) +
   geom_density(fill = '#99d6ff', alpha=0.4) +
-  
+  geom_vline(aes(xintercept = median(Fare, na.rm = TRUE)), colour='red', linetype='dashed', lwd=1) +
+  scale_x_continuous(labels=dollar_format()) +
+  theme_few()
+
+#- Fill in missing value in Fare
+full$Fare[which(is.na(full$Fare))] <- median(full[full$Embarked == "S" & full$Pclass == 3, "Fare"], na.rm = TRUE)
+
+# Make variables factors into factors
+factor_vars <- c('PassengerId','Pclass','Sex','Embarked', 'Title','Surname','Family','FsizeD')
+
+full[factor_vars] <- lapply(full[factor_vars], function(x) as.factor(x))
+
+md.pattern(full)
+aggr_plot <- aggr(full, col=c('navyblue','red'), numbers=TRUE, sortVars=TRUE, labels=names(data), cex.axis=.7, gap=3, ylab=c("Histogram of missing data","Pattern"))
+
+#- Mice imputation
+mice_mod <- mice(full[ ,!names(full) %in% c('PassengerId','Name','Ticket','Cabin','Family','Surname','Survived')], method = 'pmm')
+md.pattern(full)
