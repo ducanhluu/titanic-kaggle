@@ -89,5 +89,24 @@ md.pattern(full)
 aggr_plot <- aggr(full, col=c('navyblue','red'), numbers=TRUE, sortVars=TRUE, labels=names(data), cex.axis=.7, gap=3, ylab=c("Histogram of missing data","Pattern"))
 
 #- Mice imputation
-mice_mod <- mice(full[ ,!names(full) %in% c('PassengerId','Name','Ticket','Cabin','Family','Surname','Survived')], method = 'pmm')
-md.pattern(full)
+mice_mod <- mice(full[ ,!names(full) %in% c('PassengerId','Name','Ticket','Cabin','Family','Surname','Survived')], method = 'pmm', seed = 129)
+mice_output <- complete(mice_mod)
+
+# Plot age distributions
+par(mfrow=c(1,2))
+hist(full$Age, freq=F, main='Age: Original Data', 
+     col='darkgreen', ylim=c(0,0.04))
+hist(mice_output$Age, freq=F, main='Age: MICE Output', 
+     col='lightgreen', ylim=c(0,0.04))
+
+#- Filling missing value in Age
+full$Age <- mice_output$Age
+
+any(is.na(full$Age))
+
+# Dealing with mother-children relation
+ggplot(full[1:891, ], aes(Age, fill = factor(Survived))) +
+  geom_histogram() + 
+  facet_grid(.~Sex) +
+  theme_few()
+  
