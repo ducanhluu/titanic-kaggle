@@ -109,4 +109,26 @@ ggplot(full[1:891, ], aes(Age, fill = factor(Survived))) +
   geom_histogram() + 
   facet_grid(.~Sex) +
   theme_few()
-  
+
+#- Create Child field
+full$Child[full$Age < 18] <- "Child"
+full$Child[full$Age >= 18] <- "Adult"
+
+table(full$Child, full$Survived)  
+
+#- Add mother field
+full$Mother <- "Not Mother"
+full$Mother[full$Sex == "female" & full$Parch > 0 & full$Age > 18 & full$Title != "Miss"] <- "Mother"
+
+table(full$Mother, full$Survived)
+
+#- Factorize child and mother field
+full$Mother <- factor(full$Mother)
+full$Child <- factor(full$Child)
+
+md.pattern(full)
+train <- full[1:891, ]
+test <- full[892:1309, names(full) != "Survived"]
+
+write.csv(train, "./data/handled_train.csv")
+write.csv(test, "./data/handled_test.csv")
